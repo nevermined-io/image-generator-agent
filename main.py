@@ -104,8 +104,9 @@ class ImageGeneratorAgent:
                     'step_id': data['step_id'],
                     'task_id': data["task_id"],
                     'step_status': AgentExecutionStatus.Completed.value,
-                    'output': ipfs_url,
-                    'is_last': True
+                    'output': 'Image generated and uploaded to IPFS',
+                    'is_last': True,
+                    'output_artifacts': [ipfs_url],
                 },
             )
 
