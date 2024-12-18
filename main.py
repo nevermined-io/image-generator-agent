@@ -48,7 +48,6 @@ class ImageGeneratorAgent:
 
         # Check if the step status is pending; if not, exit the function
         if step['step_status'] != AgentExecutionStatus.Pending.value:
-            print('Step status is not pending')
             return
 
         # Log the initiation of the image generation task
@@ -60,7 +59,6 @@ class ImageGeneratorAgent:
 
         # Extract the character object from input_query
         input_query = step.get('input_query', '')
-        
 
         #tcheck if character prompt is a string with json format. If so, convert it to a dictionary
         if isinstance(input_query, str) and input_query.startswith('{') and input_query.endswith('}'):
@@ -75,15 +73,13 @@ class ImageGeneratorAgent:
         else:
             character_prompt = input_query
 
-        print("Character Prompt:", character_prompt)
-
         if not character_prompt:
             print("No character data provided")
             await self.payment.ai_protocol.log_task(TaskLog(
                 task_id=step['task_id'],
                 message='No character data provided.',
                 level='error',
-                task_status=AgentExecutionStatus.Failed.value
+                task_status=AgentExecutionStatus.Failed
             ))
             return
 
@@ -96,27 +92,30 @@ class ImageGeneratorAgent:
             print("IPFS URL:", ipfs_url)
 
             # Update the task step with the image data and mark it as completed
-            self.payment.ai_protocol.update_step(
+            response = self.payment.ai_protocol.update_step(
                 did=data['did'],
                 task_id=data['task_id'],
                 step_id=data['step_id'],
                 step={
                     'step_id': data['step_id'],
                     'task_id': data["task_id"],
-                    'step_status': AgentExecutionStatus.Completed.value,
+                    'step_status': AgentExecutionStatus.Completed,
                     'output': 'Image generated and uploaded to IPFS',
                     'is_last': True,
                     'output_artifacts': [ipfs_url],
                 },
             )
 
+            print(response.status_code)
+
             # Log the completion of the image generation task
             await self.payment.ai_protocol.log_task(TaskLog(
                 task_id=step['task_id'],
                 message='Image generation and upload to IPFS completed.',
                 level='info',
-                task_status=AgentExecutionStatus.Completed.value
+                task_status=AgentExecutionStatus.Completed
             ))
+
 
         except Exception as e:
             # Handle any exceptions that occur during the image generation process
@@ -126,7 +125,7 @@ class ImageGeneratorAgent:
                 task_id=step['task_id'],
                 message=f'Error during image generation: {e}',
                 level='error',
-                task_status=AgentExecutionStatus.Failed.value
+                task_status=AgentExecutionStatus.Failed
             ))
             return
 
@@ -172,5 +171,4 @@ async def main():
 
 if __name__ == '__main__':
     # Run the main function using asyncio's event loop
-    import torch
     asyncio.run(main())

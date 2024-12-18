@@ -86,7 +86,7 @@ class ImageGenerator:
                     output = self.pipe(
                         prompt=prompt,
                         guidance_scale=5,
-                        num_inference_steps=50,
+                        num_inference_steps=20,
                         height=512,
                         width=512,
                         negative_prompt=negative_prompt,
@@ -97,7 +97,7 @@ class ImageGenerator:
                 output = self.pipe(
                     prompt=prompt,
                     guidance_scale=5,
-                    num_inference_steps=50,
+                    num_inference_steps=20,
                     height=512,
                     width=512,
                     negative_prompt=negative_prompt,
